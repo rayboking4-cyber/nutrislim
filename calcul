@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:transparent;padding:12px}
+.nc-header{background:#1a6e3c;color:#fff;border-radius:16px;padding:18px;text-align:center;margin-bottom:14px}
+.nc-header h3{margin:0 0 4px;font-size:1.2rem;color:#fff;font-weight:700}
+.nc-header p{margin:0;font-size:.82rem;color:#ddffd0}
+.nc-card{background:#fff;border:1px solid #cce8d8;border-radius:14px;padding:18px;margin-bottom:12px}
+.nc-label{font-size:.82rem;color:#1a6e3c;font-weight:700;margin-bottom:5px;display:block}
+.nc-field{width:100%;padding:10px 12px;border:1.5px solid #cce8d8;border-radius:9px;font-size:1rem;color:#1a3d25;margin-bottom:12px;font-family:Arial,sans-serif}
+.nc-field:focus{outline:none;border-color:#1a6e3c}
+.nc-btn{width:100%;padding:13px;background:#1a6e3c;color:#fff;border:none;border-radius:11px;font-size:1rem;font-weight:700;cursor:pointer;font-family:Arial,sans-serif}
+.nc-btn:hover{background:#155730}
+.nc-result{background:#f0faf4;border:2px solid #1a6e3c;border-radius:14px;padding:18px;text-align:center;margin-top:14px;display:none}
+.nc-bmi-num{font-size:2.8rem;font-weight:800;color:#1a6e3c;line-height:1;margin:6px 0}
+.nc-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:9px;padding:9px 13px;margin-bottom:7px;border:1px solid #cce8d8}
+.nc-row-t{font-size:.8rem;color:#777}
+.nc-row-v{font-size:.88rem;font-weight:700;color:#1a6e3c}
+.nc-advice{font-size:.83rem;color:#444;line-height:1.7;background:#fff;border-radius:9px;padding:11px;text-align:right;border:1px solid #cce8d8;margin:10px 0 13px}
+.nc-cta{display:block;background:#1a6e3c;color:#fff;text-decoration:none;padding:12px;border-radius:11px;font-weight:700;font-size:.92rem;text-align:center}
+.nc-bar{display:flex;height:9px;border-radius:8px;overflow:hidden;margin:10px 0 3px;gap:2px}
+.nc-bar span:nth-child(1){flex:1;background:#3b9ee0}
+.nc-bar span:nth-child(2){flex:1.5;background:#2d9e5f}
+.nc-bar span:nth-child(3){flex:1;background:#e8a030}
+.nc-bar span:nth-child(4){flex:1;background:#e05050}
+.nc-bar-lbl{display:flex;justify-content:space-between;font-size:.68rem;color:#999;margin-bottom:10px}
+.nc-err{color:#c0392b;font-size:.82rem;margin-bottom:8px;display:none}
+</style>
+</head>
+<body>
+<div class="nc-header">
+  <div style="font-size:1.8rem;margin-bottom:5px">⚖️</div>
+  <h3>حاسبة مؤشر كتلة الجسم</h3>
+  <p>اكتشفي وزنك المثالي الآن</p>
+</div>
+<div class="nc-card">
+  <label class="nc-label">الجنس</label>
+  <select class="nc-field" id="nc-gender">
+    <option value="f">أنثى</option>
+    <option value="m">ذكر</option>
+  </select>
+  <label class="nc-label">الطول (سم)</label>
+  <input class="nc-field" type="number" id="nc-h" placeholder="مثال: 165" min="140" max="210">
+  <label class="nc-label">الوزن (كلغ)</label>
+  <input class="nc-field" type="number" id="nc-w" placeholder="مثال: 70" min="30" max="200">
+  <div class="nc-err" id="nc-err">الرجاء إدخال الطول والوزن بشكل صحيح</div>
+  <button class="nc-btn" onclick="ncGo()">احسبي الآن ⚡</button>
+</div>
+<div class="nc-result" id="nc-result">
+  <p style="margin:0;font-size:.8rem;color:#555">مؤشر كتلة جسمك</p>
+  <div class="nc-bmi-num" id="nc-bmi"></div>
+  <div id="nc-badge" style="display:inline-block;padding:4px 16px;border-radius:20px;font-size:.8rem;font-weight:700;margin:6px 0 12px"></div>
+  <div class="nc-bar"><span></span><span></span><span></span><span></span></div>
+  <div class="nc-bar-lbl"><span>نقص</span><span>طبيعي</span><span>زيادة</span><span>سمنة</span></div>
+  <div class="nc-row"><span class="nc-row-t">الوزن المثالي</span><span class="nc-row-v" id="nc-ideal"></span></div>
+  <div class="nc-row"><span class="nc-row-t">الفرق</span><span class="nc-row-v" id="nc-diff"></span></div>
+  <div class="nc-advice" id="nc-adv"></div>
+  <a class="nc-cta" href="https://nutriluxe.ma/pages/nutrislim">اطلبي الحل الآن 🌿</a>
+</div>
+
+<script>
+function ncGo(){
+  var h=parseFloat(document.getElementById('nc-h').value);
+  var w=parseFloat(document.getElementById('nc-w').value);
+  var g=document.getElementById('nc-gender').value;
+  var err=document.getElementById('nc-err');
+  if(!h||!w||h<100||w<20){err.style.display='block';return;}
+  err.style.display='none';
+  var hm=h/100,bmi=w/(hm*hm),bmiR=Math.round(bmi*10)/10;
+  var iMin=Math.round(18.5*hm*hm),iMax=Math.round(24.9*hm*hm);
+  var iMid=g==='f'?Math.round(21*hm*hm):Math.round(22.5*hm*hm);
+  var diff=Math.round(w-iMid);
+  var st,co,bg,adv;
+  if(bmi<18.5){st='نقص في الوزن';co='#1a6aa0';bg='#e6f2fb';adv='وزنك أقل من المعدل. NutriSlim يساعدك على التغذية المتوازنة بطريقة صحية.';}
+  else if(bmi<25){st='وزن طبيعي ✓';co='#1a6e3c';bg='#eaf7f0';adv='برافو! وزنك في المدى الصحي المثالي. حافظي عليه مع NutriSlim يومياً.';}
+  else if(bmi<30){st='زيادة في الوزن';co='#b87000';bg='#fff6e6';adv='مع NutriSlim وروتين صحي بسيط، تقدري توصلي لوزنك المثالي خلال أسابيع.';}
+  else{st='سمنة';co='#c0392b';bg='#fdecea';adv='NutriSlim صُمم خصيصاً لمساعدتك على خسارة الوزن بأمان وفعالية.';}
+  document.getElementById('nc-bmi').textContent=bmiR;
+  var b=document.getElementById('nc-badge');b.textContent=st;b.style.background=bg;b.style.color=co;
+  document.getElementById('nc-ideal').textContent=iMin+' - '+iMax+' كلغ';
+  var dv=document.getElementById('nc-diff');
+  dv.textContent=diff>0?'زائد '+diff+' كلغ':diff<0?'ناقص '+Math.abs(diff)+' كلغ':'وزن مثالي';
+  dv.style.color=diff>0?'#c0392b':diff<0?'#1a6aa0':'#1a6e3c';
+  document.getElementById('nc-adv').textContent=adv;
+  var r=document.getElementById('nc-result');r.style.display='block';
+}
+</script>
+</body>
+</html>
